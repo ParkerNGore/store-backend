@@ -93,7 +93,12 @@ router.post("/login", async (req, res) => {
     const username = req.body.username;
     const password = req.body.password;
 
-    const user = await User.findOne({ username });
+    console.log(username);
+    console.log(password);
+
+    const user = await User.findOne({ username: username });
+
+    console.log(user);
 
     bcrypt.compare(password, user.password, async function (err, isMatch) {
       if (err)
@@ -111,7 +116,7 @@ router.post("/login", async (req, res) => {
         );
         res.set("auth", token);
         res.set("Access-Control-Expose-Headers", "auth");
-        res.send("Successfully Logged In");
+        res.status(200).json(user);
       }
     });
   } catch (err) {

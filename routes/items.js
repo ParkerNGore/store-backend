@@ -6,9 +6,11 @@ const multer = require("multer");
 const fs = require("fs");
 const path = require("path");
 
+const uploadFolder = process.env.PWD + "/public/uploads";
+
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "uploads");
+    cb(null, "public/uploads");
   },
   filename: (req, file, cb) => {
     cb(null, file.fieldname + "-" + Date.now());
@@ -37,8 +39,10 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-router.post("/", upload.single("image"), async (req, res) => {
+router.post("/", upload.single("ItemPhoto"), async (req, res) => {
   try {
+    const filePath = path.join(uploadFolder + "/" + req.file.filename);
+
     const savedItem = await {
       Name: req.body.name,
       Quantity: req.body.Quantity,
@@ -46,9 +50,7 @@ router.post("/", upload.single("image"), async (req, res) => {
       SellerValue: req.body.sellervalue,
       AllianceValue: req.body.alliancevalue,
       ItemPhoto: {
-        data: fs.readFileSync(
-          path.join(__dirname + "/uploads/" + req.file.filename)
-        ),
+        data: fs.readFileSync(filePath),
         contentType: "image/png",
       },
     };
@@ -75,9 +77,7 @@ router.put("/:id", async (req, res) => {
     SellerValue: req.body.sellervalue,
     AllianceValue: req.body.alliancevalue,
     ItemPhoto: {
-      data: fs.readFileSync(
-        path.join(__dirname + "/uploads/" + req.file.filename)
-      ),
+      data: fs.readFileSync(path.join(uploadFolder + "/" + req.file.filename)),
       contentType: "image/png",
     },
   };
